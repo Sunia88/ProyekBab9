@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Mahasiswa</title>
+  <style>
+    body { font-family: sans-serif; max-width: 820px; margin: auto; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 6px; }
+    .galat { color: #b91c1c; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <h1>Data Mahasiswa</h1>
+  <form id="form-mhs">
+    <input type="hidden" id="id">
+    <input id="nim" placeholder="NIM (10 digit)" required
+           pattern="\d{10}">
+    <input id="nama" placeholder="Nama" required maxlength="100">
+    <input id="email" type="email" placeholder="Email" required>
+    <select id="prodi_id">
+      <option value="1">PTI</option>
+      <option value="2">SI</option>
+      <option value="3">ILK</option>
+    </select>
+    <input id="angkatan" type="number" value="2024" required>
+    <button type="submit" id="tombol-simpan">Simpan</button>
+    <button type="reset" id="tombol-batal">Batal</button>
+    <p class="galat" id="pesan-galat"></p>
+  </form>
+
+  <input id="cari" placeholder="Cari nama atau NIM...">
+  <table>
+    <thead><tr><th>NIM</th><th>Nama</th><th>Prodi</th>
+      <th>Angkatan</th><th>Aksi</th></tr></thead>
+    <tbody id="tabel-body"></tbody>
+  </table>
+  <p><button id="sebelum">&laquo;</button>
+    Halaman <span id="info-halaman">1</span>
+    <button id="berikut">&raquo;</button></p>
+
+  <script src="app.js"></script>
+</body>
+</html>

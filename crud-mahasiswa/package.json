@@ -1,0 +1,13 @@
+{
+  "name": "crud-mahasiswa",
+  "version": "1.0.0",
+  "description": "Proyek Mini BAB 9 - CRUD Mahasiswa dengan REST API dan Fetch",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file=.env server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mysql2": "^3.11.5"
+  }
+}

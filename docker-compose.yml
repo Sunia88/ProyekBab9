@@ -1,0 +1,75 @@
+# Lingkungan pengembangan Proyek Mini BAB 9 (pengganti XAMPP)
+# Jalankan dari folder ini:  docker compose up -d
+#
+#   Node.js/Express (versi utama)  -> http://localhost:3000
+#   PHP/PDO (Opsi alternatif 9.5.4) -> http://localhost:8080
+#   phpMyAdmin                      -> http://localhost:8081
+#   MariaDB (untuk PhpStorm/HeidiSQL)-> localhost:3307
+
+services:
+  db:
+    image: mariadb:11
+    container_name: bab9-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root_rahasia      # hanya untuk pengembangan lokal
+      TZ: Asia/Jakarta
+    ports:
+      - "3307:3306"      # 3307 di host agar tidak bentrok dengan MySQL lain
+    volumes:
+      - db_data:/var/lib/mysql                 # data tetap ada walau kontainer dihapus
+      - ./db/init:/docker-entrypoint-initdb.d:ro   # dieksekusi SEKALI saat volume masih kosong
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  node:
+    image: node:22-alpine
+    container_name: bab9-node
+    working_dir: /app
+    command: sh -c "[ -f .env ] || cp .env.example .env; npm install && node --env-file=.env server.js"
+    environment:
+      DB_HOST: db        # mengalahkan DB_HOST=localhost di .env (nama layanan Docker)
+      DB_PORT: 3306
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./crud-mahasiswa:/app
+      - node_modules:/app/node_modules         # node_modules tidak ikut ke folder OneDrive
+    depends_on:
+      db:
+        condition: service_healthy
+
+  php:
+    build: ./php
+    container_name: bab9-php
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: db_kampus
+      DB_USER: app_kampus
+      DB_PASS: Kampus#2026
+    ports:
+      - "8080:80"
+    volumes:
+      - ./php/src:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: bab9-phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+  node_modules:
